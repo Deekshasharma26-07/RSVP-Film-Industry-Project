@@ -15,9 +15,23 @@ USE imdb;
 -- Type your code below:
 
 
-SELECT table_name, table_rows
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = 'imdb';
+SELECT COUNT(*) FROM movie:
+
+-- Number of rows are 7997
+SELECT COUNT(*) FROM genre;
+
+-- Number of rows are 14662
+SELECT COUNT(*) FROM ratings
+
+-- Number of rows are 7997
+SELECT COUNT(*) FROM director_mapping;
+
+-- Number of rows are 3867
+SELECT COUNT(*) FROM names;
+
+-- Number of rows are 25735
+SELECT COUNT(*) FROM role_mapping;
+
 
 /*
 	TABLE_NAME	TABLE_ROWS
@@ -34,15 +48,15 @@ WHERE TABLE_SCHEMA = 'imdb';
 
 
 SELECT
-         SUM(CASE WHEN id IS NULL THEN 1 ELSE 0 END) AS ID_nulls,
-         SUM(CASE WHEN title IS NULL THEN 1 ELSE 0 END) AS title_nulls,
-         SUM(CASE WHEN year  IS NULL THEN 1 ELSE 0 END) AS year_nulls,
-         SUM(CASE WHEN date_published IS NULL THEN 1 ELSE 0 END) AS date_published_nulls,
-         SUM(CASE WHEN duration IS NULL THEN 1 ELSE 0 END) AS duration_nulls,
-         SUM(CASE WHEN country IS NULL THEN 1 ELSE 0 END) AS country_nulls,
-         SUM(CASE WHEN worlwide_gross_income IS NULL THEN 1 ELSE 0 END) AS worldwide_gross_income_nulls,
-         SUM(CASE WHEN languages IS NULL THEN 1 ELSE 0 END) AS language_nulls,
-         SUM(CASE WHEN production_company IS NULL THEN 1 ELSE 0 END) AS production_company_nulls
+SUM(CASE WHEN id IS NULL THEN 1 ELSE 0 END) AS ID_nulls,
+SUM(CASE WHEN title IS NULL THEN 1 ELSE 0 END) AS title_nulls,
+SUM(CASE WHEN year  IS NULL THEN 1 ELSE 0 END) AS year_nulls,
+SUM(CASE WHEN date_published IS NULL THEN 1 ELSE 0 END) AS date_published_nulls,
+SUM(CASE WHEN duration IS NULL THEN 1 ELSE 0 END) AS duration_nulls,
+SUM(CASE WHEN country IS NULL THEN 1 ELSE 0 END) AS country_nulls,
+SUM(CASE WHEN worlwide_gross_income IS NULL THEN 1 ELSE 0 END) AS worldwide_gross_income_nulls,
+SUM(CASE WHEN languages IS NULL THEN 1 ELSE 0 END) AS language_nulls,
+SUM(CASE WHEN production_company IS NULL THEN 1 ELSE 0 END) AS production_company_nulls
          
 FROM movie;         
 
@@ -171,7 +185,7 @@ Combining both the movie and genres table can give more interesting insights. */
 -- Q6.Which genre had the highest number of movies produced overall?
 -- Type your code below:
 
-SELECT genre, year, COUNT(movie_id) AS number_of_movies
+SELECT g.genre, year, COUNT(movie_id) AS number_of_movies
 FROM genre AS g
 INNER JOIN movie AS m
 ON g.movie_id = m.id
@@ -194,14 +208,11 @@ So, let’s find out the count of movies that belong to only one genre.*/
 -- Type your code below:
 
 WITH ct_genre AS
-(
-         SELECT movie_id,
-                         COUNT(genre) AS number_of_movies
-		FROM genre
-        GROUP BY movie_id
-        HAVING number_of_movies=1
+(SELECT movie_id,  COUNT(genre) AS number_of_movies
+FROM genre
+GROUP BY movie_id
+HAVING number_of_movies=1
 )
-
 SELECT COUNT(movie_id) AS number_of_movies
 FROM ct_genre;
 
@@ -236,7 +247,7 @@ FROM genre AS g
 INNER JOIN movie AS m
 ON g.movie_id = m.id
 GROUP BY genre
-ORDER BY AVG(duration) DESC;
+ORDER BY avg_duration DESC;
 
 /*
 Genre:
@@ -263,13 +274,11 @@ Lets find where the movies of genre 'thriller' on the basis of number of movies.
 -- Type your code below:
 
 WITH genre_rank AS
-(
-            SELECT genre, COUNT(movie_id) AS movie_count,
-                           RANK() OVER(ORDER BY COUNT(movie_id) DESC) AS genre_rank
-			FROM genre
-            GROUP BY genre
-)
-            
+(SELECT genre, COUNT(movie_id) AS movie_count,
+RANK() OVER(ORDER BY COUNT(movie_id) DESC) AS genre_rank
+FROM genre
+GROUP BY genre
+)            
 SELECT *
 FROM genre_rank
 WHERE genre='thriller';
