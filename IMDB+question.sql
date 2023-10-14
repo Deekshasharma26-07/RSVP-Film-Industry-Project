@@ -310,13 +310,13 @@ To start with lets get the min and max values of different columns in the table*
 +---------------+-------------------+---------------------+----------------------+-----------------+-----------------+*/
 -- Type your code below:
 
-SELECT MIN(avg_rating) AS min_avg_rating,
-               MAX(avg_rating) AS max_avg_rating,
-               MIN(total_votes) AS min_total_votes,
-	  MAX(total_votes) AS max_total_votes,
-               MIN(median_rating) AS min_median_rating,
-	 MAX(median_rating) AS max_median_rating
-     
+SELECT 
+MIN(avg_rating) AS min_avg_rating,
+MAX(avg_rating) AS max_avg_rating,
+MIN(total_votes) AS min_total_votes,
+MAX(total_votes) AS max_total_votes,
+MIN(median_rating) AS min_median_rating,
+MAX(median_rating) AS max_median_rating     
 FROM ratings;
 
 /*
@@ -344,7 +344,7 @@ Now, let’s find out the top 10 movies based on average rating.*/
 -- It's ok if RANK() or DENSE_RANK() is used too
 
 SELECT title, avg_rating,
-                DENSE_RANK() OVER(ORDER BY avg_rating DESC) AS movie_rank
+DENSE_RANK() OVER(ORDER BY avg_rating DESC) AS movie_rank
 FROM movie AS m
 INNER JOIN ratings AS r
 ON r.movie_id = m.id
@@ -376,7 +376,7 @@ Summarising the ratings table based on the movie counts by median rating can giv
 SELECT median_rating, COUNT(movie_id) AS movie_count
 FROM ratings
 GROUP BY median_rating
-ORDER BY median_rating;
+ORDER BY movie_count desc;
 
 
 
@@ -395,7 +395,7 @@ Now, let's find out the production house with which RSVP Movies can partner for 
 -- Type your code below:
 
 SELECT production_company, COUNT(id) AS movie_count,
-                DENSE_RANK() OVER(ORDER BY COUNT(id) DESC) AS prod_company_rank
+DENSE_RANK() OVER(ORDER BY COUNT(id) DESC) AS prod_company_rank
 FROM movie AS m
 INNER JOIN ratings AS r
 ON m.id = r.movie_id
@@ -428,7 +428,9 @@ INNER JOIN ratings AS r
 ON g.movie_id = r.movie_id
 INNER JOIN movie AS m
 ON m.id = g.movie_id
-WHERE m.country='USA' AND r.total_votes>1000 AND MONTH(date_published)=3 AND year=2017
+WHERE m.country='USA' 
+AND r.total_votes>1000 AND MONTH(date_published)=3 
+AND year=2017
 GROUP BY g.genre
 ORDER BY movie_count DESC;
 
@@ -456,7 +458,9 @@ INNER JOIN ratings AS r
 ON g.movie_id = r.movie_id
 INNER JOIN movie AS m
 ON m.id = g.movie_id
-WHERE title LIKE 'The%' AND avg_rating > 8
+WHERE title LIKE 'The%' 
+AND avg_rating > 8
+group by title
 ORDER BY avg_rating DESC;
 
 
